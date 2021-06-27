@@ -1,0 +1,28 @@
+{
+  "name": "movietop250",
+  "version": "1.0.0",
+  "description": "douban movie top250 data",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "cheerio": "^1.0.0-rc.10"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thiled/movie-top250.git"
+  },
+  "keywords": [
+    "douban",
+    "movie",
+    "top250"
+  ],
+  "author": "thiled",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thiled/movie-top250/issues"
+  },
+  "homepage": "https://github.com/thiled/movie-top250#readme"
+}
