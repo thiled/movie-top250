@@ -5,7 +5,8 @@ let data = [];
 let listIndex = 0;
 const total = 250;
 const saveFileName = 'movieTop250.json';
-const Cookie = 'dbcl2=""'; // 浏览器登录后从cookie获取，必须设置，否则会被豆瓣拦截
+const Cookie = 'dbcl2=""'; // dbcl2值，浏览器登录douban后从cookie获取，必须设置，否则会被豆瓣拦截
+
 // 影片信息对象类定义
 class MovieObj {
   title = ''; // 片名
