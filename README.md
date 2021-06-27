@@ -10,6 +10,11 @@
 // 安装依赖
 npm i
 ```
+
+```
+// 修改index.js中的Cookie值
+const Cookie = 'dbcl2="xxx"'; // dbcl2值，浏览器登录douban后从cookie获取，必须设置，否则会被豆瓣拦截
+```
 ```
 // 运行
 node index.js
