@@ -6,17 +6,16 @@
 
 ### 获取数据
 仓库中的movieTop250.json为提交时的存档，有需要可自行跑脚本获取最新数据  
+#### 安装依赖
 ```
-// 安装依赖
 npm i
 ```
-
+#### 修改index.js中的Cookie值
 ```
-// 修改index.js中的Cookie值
 const Cookie = 'dbcl2="xxx"'; // dbcl2值，浏览器登录douban后从cookie获取，必须设置，否则会被豆瓣拦截请求
 ```
+#### 运行
 ```
-// 运行
 node index.js
 ```
 
