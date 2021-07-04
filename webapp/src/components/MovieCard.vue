@@ -1,18 +1,13 @@
 <template>
-  <div class="movie-card">
-    <div class="pic-container">
-      <img class="img" :src="picUrl" alt="" />
-      <span class="top-no">No.{{ topNo }}</span>
+  <div class="movie-card" @click="goDouban">
+    <img class="img" :src="picUrl" alt="" />
+    <div class="title">
+      {{ title.split(' ')[0] }}
     </div>
-    <div class="info">
-      <div class="top">
-        <div class="title">{{ title }}</div>
-        <div class="year">{{ year }}</div>
-      </div>
-      <div class="bottom">
-        <div class="duration">{{ duration }}分钟</div>
-        <div class="score">{{ score }}</div>
-      </div>
+    <div class="bottom">
+      <span class="top-no">No.{{ topNo }}</span>
+      <span class="year">{{ year }}</span>
+      <span class="score">{{ score }}</span>
     </div>
   </div>
 </template>
@@ -24,9 +19,15 @@ export default {
     title: String,
     picUrl: String,
     year: Number,
-    duration: Number,
     score: Number,
     topNo: Number,
+    playType: Number,
+    url: String,
+  },
+  methods: {
+    goDouban() {
+      window.open(this.url, '_blank');
+    },
   },
 };
 </script>
@@ -34,43 +35,47 @@ export default {
 <style scoped lang='less'>
 .movie-card {
   display: flex;
-  width: 300px;
+  width: fit-content;
   box-sizing: border-box;
-  padding: 5px;
-  .pic-container {
-    position: relative;
-    font-size: 0;
-    .img {
-      width: 100px;
-    }
+  flex-direction: column;
+  padding: 8px;
+  border-radius: 5px;
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  font-size: 13px;
+  cursor: pointer;
+  .img {
+    width: 126px;
+    height: 171px;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+  }
+  .title {
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 126px;
+    margin-bottom: 2px;
+  }
+  .bottom {
+    display: flex;
+    justify-content: space-between;
     .top-no {
       color: #744900;
       padding: 2px;
       background: #fcdd7d;
       font-size: 12px;
       line-height: 1;
-      display: flex;
-      align-items: center;
-      width: fit-content;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-  }
-  .info {
-    font-size: 13px;
-    margin-left: 3px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    .score {
-      color: #ff9500;
+      display: inline-block;
+      border-radius: 2px;
     }
     .year {
       color: #808080;
     }
-    .duration {
-      color: #808080;
+    .score {
+      color: #ff9500;
     }
   }
 }
