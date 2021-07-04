@@ -6,7 +6,7 @@ let listIndex = 0;
 const total = 250;
 const saveFileName = 'movieTop250.json';
 const config = require('./config');
-const Cookie = `dbcl2="${config.dbcl2}"`; 
+const Cookie = `dbcl2="${config.dbcl2}"`;
 
 // 影片信息对象类定义
 class MovieObj {
@@ -137,6 +137,9 @@ function getPage(url) {
           .children()
           .map((index, item) => $(item).text())
           .get();
+        if (movieObj.writers[movieObj.writers.length - 1] == '&copy;豆瓣') {
+          movieObj.writers.pop();
+        }
         // 输出
         data.push(movieObj);
         console.log(movieObj);
