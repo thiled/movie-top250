@@ -31,7 +31,7 @@ node index.js
 	score: Number, // 评分
 	votes: Number, // 评价数
 	duration: Number, // 片长
-	playType: Number, // 可播放状态 0 无在线, 1 免费, 2 需要会员
+	playType: Number, // 可播放状态, 1 免费, 2 需要会员, 3 无在线播放
 	genres: Array, // 类型
 	areas: Array, // 地区
 	languages: Array, // 语言

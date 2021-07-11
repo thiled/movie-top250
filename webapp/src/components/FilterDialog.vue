@@ -1,25 +1,33 @@
 <template>
-  <v-dialog v-model="dialog" width="500" @click:outside="onClose">
+  <v-dialog v-model="dialog" width="800" scrollable @click:outside="onClose">
     <v-card>
       <v-card-title primary-title> {{ title }} </v-card-title>
-      <div v-for="item in filterList" :key="item.key">
-        <span v-if="title == '在线播放'">{{
-          getPlayTypeString(item.key)
-        }}</span>
-        <span v-else>{{ item.key }}</span>
-        {{ item.count }}
-      </div>
+      <v-card-text>
+        <v-btn
+          class="filter-btn"
+          depressed
+          v-for="item in filterList"
+          :key="item.key"
+          @click="onSelect(item.key)"
+        >
+          <span v-if="title == '在线播放'">{{
+            getPlayTypeString(item.key)
+          }}</span>
+          <span v-else>{{ item.key }}</span>
+          <span class="grey--text">({{ item.count }})</span>
+        </v-btn>
+      </v-card-text>
     </v-card>
   </v-dialog>
 </template>
-
 <script>
+import { PlayTypes } from '../enums.js';
 export default {
   name: 'FilterDialog',
   props: {
     title: String,
     filterData: Object,
-    orderByCount:Boolean
+    orderByCount: Boolean,
   },
   data() {
     return {
@@ -46,20 +54,20 @@ export default {
   },
   methods: {
     getPlayTypeString(key) {
-      if (key == 0) {
-        return '无在线';
-      } else if (key == 1) {
-        return '免费播放';
-      } else {
-        return '需要会员';
-      }
+      return PlayTypes[key];
     },
     onClose() {
       this.$emit('update:visible', false);
     },
+    onSelect(value) {
+      this.$emit('select', value);
+      this.onClose();
+    },
   },
 };
 </script>
-
-<style>
+<style scoped>
+.filter-btn {
+  margin: 0 10px 10px 0;
+}
 </style>

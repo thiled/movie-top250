@@ -1,0 +1,35 @@
+<template>
+  <div class="filter-label">
+    <span class="label">{{ label }}</span>
+    <v-btn icon x-small @click="$emit('close', attr)">
+      <v-icon>mdi-close</v-icon>
+    </v-btn>
+  </div>
+</template>
+<script>
+export default {
+  name: 'SelectedFilterLabel',
+  props: {
+    attr: String,
+    label: String,
+  },
+};
+</script>
+<style scoped>
+.filter-label {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+
+  .label {
+    background: #f5f5f5;
+    box-sizing: border-box;
+    height: 28px;
+    line-height: 28px;
+    padding: 0 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+</style>

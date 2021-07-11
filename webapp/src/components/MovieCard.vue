@@ -1,7 +1,7 @@
 <template>
   <div class="movie-card" @click="goDouban">
     <img class="img" :src="picUrl" alt="" />
-    <div class="title">
+    <div class="movie-title" :title="title">
       {{ title.split(' ')[0] }}
     </div>
     <div class="bottom">
@@ -11,7 +11,6 @@
     </div>
   </div>
 </template>
-
 <script>
 export default {
   name: 'MovieCard',
@@ -31,8 +30,7 @@ export default {
   },
 };
 </script>
-
-<style scoped lang='less'>
+<style scoped>
 .movie-card {
   display: flex;
   width: fit-content;
@@ -44,6 +42,7 @@ export default {
     0 1px 5px 0 rgba(0, 0, 0, 0.12);
   font-size: 13px;
   cursor: pointer;
+
   .img {
     width: 126px;
     height: 171px;
@@ -51,7 +50,8 @@ export default {
     border-radius: 4px;
     display: block;
   }
-  .title {
+
+  .movie-title {
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -59,21 +59,25 @@ export default {
     width: 126px;
     margin-bottom: 2px;
   }
+
   .bottom {
     display: flex;
     justify-content: space-between;
+
     .top-no {
       color: #744900;
-      padding: 2px;
+      padding: 0 4px;
       background: #fcdd7d;
       font-size: 12px;
-      line-height: 1;
-      display: inline-block;
+      display: flex;
+      align-items: center;
       border-radius: 2px;
     }
+
     .year {
       color: #808080;
     }
+
     .score {
       color: #ff9500;
     }

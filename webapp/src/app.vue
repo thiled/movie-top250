@@ -1,20 +1,27 @@
 <template>
-  <div class="wrap" data-app="true">
+  <!-- data-app必须设置，否则v-dialog无效 -->
+  <div class="v-application" data-app="true">
     <div class="filters">
-      <v-btn @click="onFilterClick('年份', yearFilter, false)">年份</v-btn>
-      <v-btn @click="onFilterClick('在线播放', playTypeFilter)">在线播放</v-btn>
-      <v-btn @click="onFilterClick('类型', genresFilter)">类型</v-btn>
-      <v-btn @click="onFilterClick('地区', areaFilter)">地区</v-btn>
-      <v-btn @click="onFilterClick('语言', langFilter)">语言</v-btn>
-      <v-btn @click="onFilterClick('导演', directorFilter)">导演</v-btn>
-      <v-btn @click="onFilterClick('编剧', writerFilter)">编剧</v-btn>
-      <FilterDialog
-        :title="filterDialog.title"
-        v-if="filterDialog.visible"
-        :visible.sync="filterDialog.visible"
-        :filterData="filterDialog.data"
-        :orderByCount="filterDialog.orderByCount"
-      />
+      <v-btn
+        v-for="(item, key) in filter"
+        :key="key"
+        @click="onFilterClick(item.name, key)"
+        >{{ item.name }}</v-btn
+      >
+    </div>
+    <div class="filter-result" v-if="showReset">
+      <v-btn @click="onReset" depressed color="primary" small class="reset-btn"
+        >重置</v-btn
+      >
+      <template v-for="(item, key) in selectedFilter">
+        <SelectedFilterLabel
+          :key="key"
+          :label="item"
+          :attr="key"
+          @close="removeFilter"
+        />
+      </template>
+      <span class="grey--text">匹配到{{ this.list.length }}个结果</span>
     </div>
     <div class="list">
       <MovieCard
@@ -23,25 +30,64 @@
         :key="item.title"
       ></MovieCard>
     </div>
+    <FilterDialog
+      v-bind="filterDialog"
+      v-if="filterDialog.visible"
+      :visible.sync="filterDialog.visible"
+      @select="onFilterSelect"
+    />
   </div>
 </template>
-
 <script>
 import MovieCard from './components/MovieCard.vue';
 import FilterDialog from './components/FilterDialog.vue';
-
+import SelectedFilterLabel from './components/SelectedFilterLabel.vue';
+import { PlayTypes } from './enums.js';
 const MovieDB = await fetch('./data/movieTop250.json').then((response) =>
   response.json()
 );
+let filterDataDict = {};
 export default {
   name: 'app',
   components: {
     MovieCard,
     FilterDialog,
+    SelectedFilterLabel,
   },
   computed: {
     list() {
-      return MovieDB;
+      return MovieDB.filter((item) => {
+        for (let key in this.filter) {
+          let value = this.filter[key].value;
+          if (item[key] instanceof Array) {
+            if (value && item[key].indexOf(value) == -1) {
+              return false;
+            }
+          } else if (value && item[key] != value) {
+            return false;
+          }
+        }
+        return true;
+      });
+    },
+    showReset() {
+      for (let key in this.filter) {
+        if (this.filter[key].value) {
+          return true;
+        }
+      }
+    },
+    selectedFilter() {
+      let filter = {};
+      for (let key in this.filter) {
+        if (this.filter[key].value) {
+          filter[key] = this.filter[key].value;
+          if (key == 'playType') {
+            filter[key] = PlayTypes[this.filter[key].value];
+          }
+        }
+      }
+      return filter;
     },
   },
   data() {
@@ -49,63 +95,60 @@ export default {
       filterDialog: {
         visible: false,
         title: '',
-        data: null,
+        filterData: null,
         orderByCount: true,
       },
       filter: {
-        year: 0,
-        director: '',
-        writer: '',
-        genres: [],
-        area: '',
-        lang: '',
-        playType: -1,
+        year: {
+          value: 0,
+          name: '年份',
+        },
+        directors: {
+          value: '',
+          name: '导演',
+        },
+        writers: {
+          value: '',
+          name: '编剧',
+        },
+        genres: {
+          value: '',
+          name: '类型',
+        },
+        areas: {
+          value: '',
+          name: '地区',
+        },
+        languages: {
+          value: '',
+          name: '语言',
+        },
+        playType: {
+          value: 0,
+          name: '在线播放',
+        },
       },
-      yearFilter: {},
-      directorFilter: {},
-      writerFilter: {},
-      genresFilter: {},
-      areaFilter: {},
-      langFilter: {},
-      playTypeFilter: {},
+      currentFilterAttr: '',
     };
   },
-
-  mounted() {
+  created() {
+    for (let key in this.filter) {
+      if (!filterDataDict[key]) {
+        filterDataDict[key] = {};
+      }
+    }
     MovieDB.forEach((item) => {
-      this.fillFilter(item, this.yearFilter, 'year');
-      this.fillFilter(item, this.directorFilter, 'directors');
-      this.fillFilter(item, this.writerFilter, 'writers');
-      this.fillFilter(item, this.genresFilter, 'genres');
-      this.fillFilter(item, this.areaFilter, 'areas');
-      this.fillFilter(item, this.langFilter, 'languages');
-      this.fillFilter(item, this.playTypeFilter, 'playType');
+      for (let key in this.filter) {
+        this.fillFilter(item, key);
+      }
     });
   },
   methods: {
-    filterMatch(item) {
-      if (!this.filter.year && this.filter.year != item.year) {
-        return false;
-      }
-      if (
-        !this.filter.director &&
-        item.directors.indexOf(this.filter.director) == -1
-      ) {
-        return false;
-      }
-      if (
-        !this.filter.writer &&
-        item.writers.indexOf(this.filter.writer) == -1
-      ) {
-        return false;
-      }
-
-      return true;
-    },
     /**
      * 填充过滤器
      */
-    fillFilter(item, filters, attr) {
+    fillFilter(item, attr) {
+      let filters = filterDataDict[attr];
       if (item[attr] instanceof Array) {
         item[attr].forEach((element) => {
           if (!filters[element]) {
@@ -128,24 +171,49 @@ export default {
         }
       }
     },
-    onFilterClick(title, filter, orderByCount = true) {
+    onFilterClick(title, filterAttr) {
       this.filterDialog.visible = true;
       this.filterDialog.title = title;
-      this.filterDialog.data = filter;
-      this.filterDialog.orderByCount = orderByCount;
+      this.filterDialog.filterData = filterDataDict[filterAttr];
+      this.filterDialog.orderByCount = filterAttr == 'year' ? false : true;
+      this.currentFilterAttr = filterAttr;
+    },
+    onFilterSelect(value) {
+      this.filter[this.currentFilterAttr].value = value;
+    },
+    onReset() {
+      for (let key in this.filter) {
+        this.filter[key].value = null;
+      }
+    },
+    removeFilter(attr) {
+      this.filter[attr].value = null;
     },
   },
 };
 </script>
-
-<style scoped lang="less">
-.wrap {
+<style scoped>
+.v-application {
   padding: 20px;
+  flex-direction: column;
   .filters {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+    .v-btn {
+      margin: 0 10px 10px 0;
+    }
+  }
+  .filter-result {
+    margin-bottom: 10px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    .reset-btn {
+      margin-right: 10px;
+    }
   }
   .list {
     display: grid;
+    padding-top: 10px;
     grid-gap: 20px 20px;
     grid-template-columns: repeat(auto-fill, 146px);
   }

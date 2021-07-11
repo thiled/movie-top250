@@ -17,7 +17,7 @@ class MovieObj {
   score = 0; // 评分
   votes = 0; // 评价数
   duration = 0; // 片长
-  playType = 0; // 可播放状态 0 无在线,1 免费,2 收费
+  playType = 3; // 可播放状态, 1 免费, 2 需要会员, 3 无在线播放
   genres = []; // 类型
   areas = []; // 地区
   languages = []; // 语言
