@@ -111,10 +111,6 @@ export default {
           value: '',
           name: '编剧',
         },
-        genres: {
-          value: '',
-          name: '类型',
-        },
         areas: {
           value: '',
           name: '地区',
@@ -122,6 +118,10 @@ export default {
         languages: {
           value: '',
           name: '语言',
+        },
+        genres: {
+          value: '',
+          name: '类型',
         },
         playType: {
           value: 0,

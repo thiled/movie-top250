@@ -1,6 +1,6 @@
 <template>
   <div class="movie-card" @click="goDouban">
-    <img class="img" :src="picUrl" alt="" />
+    <img class="img" loading="lazy" :src="picUrl" alt="" />
     <div class="movie-title" :title="title">
       {{ title.split(' ')[0] }}
     </div>
