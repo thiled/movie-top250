@@ -20,6 +20,8 @@ export default {
   display: flex;
   align-items: center;
   margin-right: 10px;
+  flex-shrink: 0;
+  margin-bottom: 10px;
 
   .label {
     background: #f5f5f5;

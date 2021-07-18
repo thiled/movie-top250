@@ -22,7 +22,7 @@
           @close="removeFilter"
         />
       </template>
-      <span class="grey--text">匹配到{{ this.renderList.length }}个结果</span>
+      <span class="filter-result__count grey--text">匹配到{{ this.renderList.length }}个结果</span>
     </div>
     <FilterDialog
       v-bind="filterDialog"
@@ -226,13 +226,18 @@ export default {
   }
 
   .filter-result {
-    margin-bottom: 10px;
     font-size: 12px;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
 
     .reset-btn {
       margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    &__count{
+      margin-bottom: 10px;
+      line-height: 28px;
     }
   }
 
