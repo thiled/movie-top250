@@ -6,7 +6,7 @@
         <v-btn
           class="filter-btn"
           depressed
-          v-for="item in filterList"
+          v-for="item in renderList"
           :key="item.key"
           @click="onSelect(item.key)"
         >
@@ -22,6 +22,9 @@
 </template>
 <script>
 import { PlayTypes } from '../enums.js';
+import progressiveRender from '../utils/progressiveRender.js';
+const pageSize = 100;
+
 export default {
   name: 'FilterDialog',
   props: {
@@ -33,6 +36,7 @@ export default {
     return {
       dialog: true,
       filterList: [],
+      renderList: [],
     };
   },
   created() {
@@ -51,6 +55,7 @@ export default {
         return b.count - a.count;
       });
     }
+    progressiveRender(this.filterList, this.renderList, pageSize);
   },
   methods: {
     getPlayTypeString(key) {

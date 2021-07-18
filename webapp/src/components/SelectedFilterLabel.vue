@@ -1,6 +1,6 @@
 <template>
   <div class="filter-label">
-    <span class="label">{{ label }}</span>
+    <span class="label">{{ filter.name }}: {{ filter.value }}</span>
     <v-btn icon x-small @click="$emit('close', attr)">
       <v-icon>mdi-close</v-icon>
     </v-btn>
@@ -10,8 +10,8 @@
 export default {
   name: 'SelectedFilterLabel',
   props: {
+    filter: Object,
     attr: String,
-    label: String,
   },
 };
 </script>

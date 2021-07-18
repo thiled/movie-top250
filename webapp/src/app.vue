@@ -1,6 +1,7 @@
 <template>
   <!-- data-app必须设置，否则v-dialog无效 -->
   <div class="v-application" data-app="true">
+    <!-- filter -->
     <div class="filters">
       <v-btn
         v-for="(item, key) in filter"
@@ -16,19 +17,12 @@
       <template v-for="(item, key) in selectedFilter">
         <SelectedFilterLabel
           :key="key"
-          :label="item"
           :attr="key"
+          :filter="item"
           @close="removeFilter"
         />
       </template>
-      <span class="grey--text">匹配到{{ this.list.length }}个结果</span>
-    </div>
-    <div class="list">
-      <MovieCard
-        v-for="item in list"
-        v-bind="item"
-        :key="item.title"
-      ></MovieCard>
+      <span class="grey--text">匹配到{{ this.renderList.length }}个结果</span>
     </div>
     <FilterDialog
       v-bind="filterDialog"
@@ -36,17 +30,26 @@
       :visible.sync="filterDialog.visible"
       @select="onFilterSelect"
     />
+    <!-- list -->
+    <div class="list">
+      <MovieCard
+        v-for="item in renderList"
+        v-bind="item"
+        :key="item.title"
+      ></MovieCard>
+    </div>
   </div>
 </template>
 <script>
 import MovieCard from './components/MovieCard.vue';
 import FilterDialog from './components/FilterDialog.vue';
 import SelectedFilterLabel from './components/SelectedFilterLabel.vue';
+import progressiveRender from './utils/progressiveRender.js';
 import { PlayTypes } from './enums.js';
-const MovieDB = await fetch('./data/movieTop250.json').then((response) =>
-  response.json()
-);
+
 let filterDataDict = {};
+const pageSize = 100;
+
 export default {
   name: 'app',
   components: {
@@ -55,21 +58,6 @@ export default {
     SelectedFilterLabel,
   },
   computed: {
-    list() {
-      return MovieDB.filter((item) => {
-        for (let key in this.filter) {
-          let value = this.filter[key].value;
-          if (item[key] instanceof Array) {
-            if (value && item[key].indexOf(value) == -1) {
-              return false;
-            }
-          } else if (value && item[key] != value) {
-            return false;
-          }
-        }
-        return true;
-      });
-    },
     showReset() {
       for (let key in this.filter) {
         if (this.filter[key].value) {
@@ -81,24 +69,71 @@ export default {
       let filter = {};
       for (let key in this.filter) {
         if (this.filter[key].value) {
-          filter[key] = this.filter[key].value;
+          filter[key] = { ...this.filter[key] };
           if (key == 'playType') {
-            filter[key] = PlayTypes[this.filter[key].value];
+            filter[key].value = PlayTypes[this.filter[key].value];
           }
         }
       }
       return filter;
     },
   },
+  watch: {
+    filter: {
+      handler() {
+        let targetList = this.movieDB.filter((item) => {
+          for (let key in this.filter) {
+            let value = this.filter[key].value;
+            if (item[key] instanceof Array) {
+              if (value && item[key].indexOf(value) == -1) {
+                return false;
+              }
+            } else if (value && item[key] != value) {
+              return false;
+            }
+          }
+          return true;
+        });
+        this.renderList = [];
+        progressiveRender(targetList, this.renderList, pageSize);
+      },
+      deep: true,
+    },
+  },
   data() {
     return {
+      movieDB: [],
       filterDialog: {
         visible: false,
         title: '',
         filterData: null,
         orderByCount: true,
       },
-      filter: {
+      renderList: [],
+      filter: null,
+      currentFilterAttr: '',
+    };
+  },
+  async created() {
+    this.movieDB = await fetch('./data/movieTop250.json').then((response) => {
+      return response.json();
+    });
+    this.initFilter();
+
+    for (let key in this.filter) {
+      if (!filterDataDict[key]) {
+        filterDataDict[key] = {};
+      }
+    }
+    this.movieDB.forEach((item) => {
+      for (let key in this.filter) {
+        this.fillFilter(item, key);
+      }
+    });
+  },
+  methods: {
+    initFilter() {
+      this.filter = {
         year: {
           value: 0,
           name: '年份',
@@ -127,23 +162,8 @@ export default {
           value: 0,
           name: '在线播放',
         },
-      },
-      currentFilterAttr: '',
-    };
-  },
-  created() {
-    for (let key in this.filter) {
-      if (!filterDataDict[key]) {
-        filterDataDict[key] = {};
-      }
-    }
-    MovieDB.forEach((item) => {
-      for (let key in this.filter) {
-        this.fillFilter(item, key);
-      }
-    });
-  },
-  methods: {
+      };
+    },
     /**
      * 填充过滤器
      */
@@ -196,21 +216,26 @@ export default {
 .v-application {
   padding: 20px;
   flex-direction: column;
+
   .filters {
     margin-bottom: 10px;
+
     .v-btn {
       margin: 0 10px 10px 0;
     }
   }
+
   .filter-result {
     margin-bottom: 10px;
     font-size: 12px;
     display: flex;
     align-items: center;
+
     .reset-btn {
       margin-right: 10px;
     }
   }
+
   .list {
     display: grid;
     padding-top: 10px;
