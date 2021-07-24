@@ -213,6 +213,11 @@ export default {
 };
 </script>
 <style scoped>
+::v-deep {
+  .v-btn__content {
+    transform: translateZ(0);
+  }
+}
 .v-application {
   padding: 20px;
   flex-direction: column;
