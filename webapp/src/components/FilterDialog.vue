@@ -1,7 +1,12 @@
 <template>
   <v-dialog v-model="dialog" width="800" scrollable @click:outside="onClose">
     <v-card>
-      <v-card-title primary-title> {{ title }} </v-card-title>
+      <v-card-title primary-title class="title">
+        <span>{{ title }}</span>
+        <v-btn icon @click="onClose">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-card-title>
       <v-card-text>
         <v-btn
           class="filter-btn"
@@ -72,6 +77,9 @@ export default {
 };
 </script>
 <style scoped>
+.title {
+  justify-content: space-between;
+}
 .filter-btn {
   margin: 0 10px 10px 0;
 }
