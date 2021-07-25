@@ -4,7 +4,7 @@
     <!-- filter -->
     <div class="filters">
       <v-btn
-        v-for="(item, key) in filter"
+        v-for="(item, key) in unSelectedFilter"
         :key="key"
         @click="onFilterClick(item.name, key)"
         >{{ item.name }}</v-btn
@@ -22,7 +22,9 @@
           @close="removeFilter"
         />
       </template>
-      <span class="filter-result__count grey--text">匹配到{{ this.renderList.length }}个结果</span>
+      <span class="filter-result__count grey--text"
+        >匹配到{{ this.renderList.length }}个结果</span
+      >
     </div>
     <FilterDialog
       v-bind="filterDialog"
@@ -77,6 +79,15 @@ export default {
       }
       return filter;
     },
+    unSelectedFilter() {
+      let filter = {};
+      for (let key in this.filter) {
+        if (!this.filter[key].value) {
+          filter[key] = { ...this.filter[key] };
+        }
+      }
+      return filter;
+    },
   },
   watch: {
     filter: {
@@ -96,6 +107,7 @@ export default {
         });
         this.renderList = [];
         progressiveRender(targetList, this.renderList, pageSize);
+        this.fillFilters();
       },
       deep: true,
     },
@@ -119,19 +131,19 @@ export default {
       return response.json();
     });
     this.initFilter();
-
-    for (let key in this.filter) {
-      if (!filterDataDict[key]) {
-        filterDataDict[key] = {};
-      }
-    }
-    this.movieDB.forEach((item) => {
-      for (let key in this.filter) {
-        this.fillFilter(item, key);
-      }
-    });
+    this.fillFilters();
   },
   methods: {
+    fillFilters() {
+      for (let key in this.filter) {
+        filterDataDict[key] = {};
+      }
+      this.movieDB.forEach((item) => {
+        for (let key in this.filter) {
+          this.fillFilter(item, key);
+        }
+      });
+    },
     initFilter() {
       this.filter = {
         year: {
@@ -168,6 +180,25 @@ export default {
      * 填充过滤器
      */
     fillFilter(item, attr) {
+      // item先与filter进行比较
+      for (let attr in this.filter) {
+        if (item[attr] instanceof Array) {
+          if (
+            this.filter[attr].value &&
+            item[attr].indexOf(this.filter[attr].value) == -1
+          ) {
+            return;
+          }
+        } else {
+          if (
+            this.filter[attr].value &&
+            item[attr] != this.filter[attr].value
+          ) {
+            return;
+          }
+        }
+      }
+      // 符合filter条件的进行填充
       let filters = filterDataDict[attr];
       if (item[attr] instanceof Array) {
         item[attr].forEach((element) => {
@@ -240,7 +271,7 @@ export default {
       margin-right: 10px;
       margin-bottom: 10px;
     }
-    &__count{
+    &__count {
       margin-bottom: 10px;
       line-height: 28px;
     }

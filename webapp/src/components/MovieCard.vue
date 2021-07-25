@@ -42,7 +42,11 @@ export default {
     0 1px 5px 0 rgba(0, 0, 0, 0.12);
   font-size: 13px;
   cursor: pointer;
-
+  transition: box-shadow 0.1s;
+  &:hover {
+    box-shadow: 0 7px 8px -4px rgba(0, 0, 0, 0.2),
+      0 12px 17px 2px rgba(0, 0, 0, 0.14), 0 5px 22px 4px rgba(0, 0, 0, 0.12) !important;
+  }
   .img {
     width: 126px;
     height: 171px;
