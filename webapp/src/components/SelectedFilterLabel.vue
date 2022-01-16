@@ -2,7 +2,7 @@
   <div class="filter-label">
     <span class="label">{{ filter.name }}: {{ filter.value }}</span>
     <v-btn icon x-small @click="$emit('close', attr)">
-      <v-icon>mdi-close</v-icon>
+      <span class="material-icons md-18">close</span>
     </v-btn>
   </div>
 </template>

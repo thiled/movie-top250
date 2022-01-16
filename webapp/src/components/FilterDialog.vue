@@ -4,7 +4,7 @@
       <v-card-title primary-title class="title">
         <span>{{ title }}</span>
         <v-btn icon @click="onClose">
-          <v-icon>mdi-close</v-icon>
+         <span class="material-icons">close</span>
         </v-btn>
       </v-card-title>
       <v-card-text>
